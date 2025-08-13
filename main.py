@@ -1,3 +1,20 @@
+[
+  {
+    "name": "Ahri",
+    "mbti": ["ENFP", "ENTP"],
+    "role": "Mid",
+    "playstyle": "기동성, 유연한 플레이",
+    "image_url": "https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Ahri.png"
+  },
+  {
+    "name": "Garen",
+    "mbti": ["ESTJ", "ESFJ"],
+    "role": "Top",
+    "playstyle": "단단함, 직관적 전투",
+    "image_url": "https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Garen.png"
+  }
+]
+
 import streamlit as st
 import pandas as pd
 import random
