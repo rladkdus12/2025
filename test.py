@@ -2,27 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="롤 챔피언 추천기", page_icon="🎮", layout="centered")
 
-st.title("🎮 나만의 롤 챔피언 찾기")
-st.write("아래 질문에 답하고 당신의 플레이 스타일에 맞는 챔피언을 추천받으세요!")
-
-# 질문
-q1 = st.radio("1. 선호하는 플레이 스타일은?", ["공격적", "수비적"])
-q2 = st.radio("2. 게임할 때 당신은?", [
-    "튼튼하게 앞라인을 담당하는 탑솔러형",
-    "전략적으로 움직이는 운영형",
-    "팀을 이끄는 리더형",
-    "팀의 주력 화력을 담당하는 원거리 딜러형",
-    "팀원을 도와주는 서포터형"
-])
-q3 = st.radio(
-    "3. 당신의 성향에 가까운 것은?", 
-    [
-        "초반 스노우볼형 (게임 초반부터 공격적으로 성장하며 승기를 잡는 스타일)", 
-        "후반 밸류형 (초반은 조심스럽게 운영하지만, 후반에 팀 승리에 큰 영향을 주는 스타일)"
-    ]
-)
-
-# 챔피언 매핑 (q1, q2, q3 모두 반영)
+# 챔피언 매핑
 champion_db = {
     # 탑솔러
     ("튼튼하게 앞라인을 담당하는 탑솔러형", "공격적", "초반 스노우볼형"): ("리븐", "기동성과 폭발적인 딜로 초반부터 공격적인 탑솔러"),
@@ -55,13 +35,70 @@ champion_db = {
     ("팀원을 도와주는 서포터형", "수비적", "후반 밸류형"): ("소나", "후반 힐과 지원으로 팀 승리 기여"),
 }
 
-def recommend_champion(q1, q2, q3):
-    key = (q2, q1, q3)
-    return champion_db.get(key, ("정보 없음", "해당 조합에 맞는 챔피언 데이터가 없습니다."))
+# session_state 초기화
+if "step" not in st.session_state:
+    st.session_state.step = 1
+if "q1" not in st.session_state:
+    st.session_state.q1 = None
+if "q2" not in st.session_state:
+    st.session_state.q2 = None
+if "q3" not in st.session_state:
+    st.session_state.q3 = None
 
-if st.button("✨ 챔피언 추천받기"):
-    champion, desc = recommend_champion(q1, q2, q3)
-    st.subheader(f"👉 추천 챔피언: {champion}")
+# 단계별 페이지
+def step1():
+    st.header("1/3 질문")
+    st.write("선호하는 플레이 스타일을 선택하세요.")
+    st.session_state.q1 = st.radio("1. 선호하는 플레이 스타일은?", ["공격적", "수비적"])
+    if st.button("다음"):
+        st.session_state.step = 2
+        st.experimental_rerun()
+
+def step2():
+    st.header("2/3 질문")
+    st.write("게임할 때 당신은?")
+    st.session_state.q2 = st.radio("2. 게임할 때 당신은?", [
+        "튼튼하게 앞라인을 담당하는 탑솔러형",
+        "전략적으로 움직이는 운영형",
+        "팀을 이끄는 리더형",
+        "팀의 주력 화력을 담당하는 원거리 딜러형",
+        "팀원을 도와주는 서포터형"
+    ])
+    if st.button("다음"):
+        st.session_state.step = 3
+        st.experimental_rerun()
+
+def step3():
+    st.header("3/3 질문")
+    st.write("당신의 성향에 가까운 것은?")
+    st.session_state.q3 = st.radio(
+        "3. 당신의 성향에 가까운 것은?", 
+        [
+            "초반 스노우볼형 (게임 초반부터 공격적으로 성장하며 승기를 잡는 스타일)", 
+            "후반 밸류형 (초반은 조심스럽게 운영하지만, 후반에 팀 승리에 큰 영향을 주는 스타일)"
+        ]
+    )
+    if st.button("결과 보기"):
+        st.session_state.step = 4
+        st.experimental_rerun()
+
+def result():
+    st.header("🏆 추천 챔피언")
+    key = (st.session_state.q2, st.session_state.q1, st.session_state.q3)
+    champion, desc = champion_db.get(key, ("정보 없음", "해당 조합에 맞는 챔피언 데이터가 없습니다."))
+    st.subheader(f"추천 챔피언: {champion}")
     st.write(desc)
     st.image(f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion.replace(' ', '')}_0.jpg")
+    if st.button("처음으로 돌아가기"):
+        st.session_state.step = 1
+        st.experimental_rerun()
 
+# 단계별 함수 호출
+if st.session_state.step == 1:
+    step1()
+elif st.session_state.step == 2:
+    step2()
+elif st.session_state.step == 3:
+    step3()
+elif st.session_state.step == 4:
+    result()
