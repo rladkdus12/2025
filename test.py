@@ -45,14 +45,16 @@ if "q2" not in st.session_state:
 if "q3" not in st.session_state:
     st.session_state.q3 = None
 
+# 다음 단계로 이동
+def go_next_step():
+    st.session_state.step += 1
+
 # 단계별 페이지
 def step1():
     st.header("1/3 질문")
     st.write("선호하는 플레이 스타일을 선택하세요.")
     st.session_state.q1 = st.radio("1. 선호하는 플레이 스타일은?", ["공격적", "수비적"])
-    if st.button("다음"):
-        st.session_state.step = 2
-        st.experimental_rerun()
+    st.button("다음", on_click=go_next_step)
 
 def step2():
     st.header("2/3 질문")
@@ -64,9 +66,7 @@ def step2():
         "팀의 주력 화력을 담당하는 원거리 딜러형",
         "팀원을 도와주는 서포터형"
     ])
-    if st.button("다음"):
-        st.session_state.step = 3
-        st.experimental_rerun()
+    st.button("다음", on_click=go_next_step)
 
 def step3():
     st.header("3/3 질문")
@@ -78,9 +78,7 @@ def step3():
             "후반 밸류형 (초반은 조심스럽게 운영하지만, 후반에 팀 승리에 큰 영향을 주는 스타일)"
         ]
     )
-    if st.button("결과 보기"):
-        st.session_state.step = 4
-        st.experimental_rerun()
+    st.button("결과 보기", on_click=go_next_step)
 
 def result():
     st.header("🏆 추천 챔피언")
@@ -89,9 +87,7 @@ def result():
     st.subheader(f"추천 챔피언: {champion}")
     st.write(desc)
     st.image(f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion.replace(' ', '')}_0.jpg")
-    if st.button("처음으로 돌아가기"):
-        st.session_state.step = 1
-        st.experimental_rerun()
+    st.button("처음으로 돌아가기", on_click=lambda: st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None}))
 
 # 단계별 함수 호출
 if st.session_state.step == 1:
