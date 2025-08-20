@@ -108,13 +108,15 @@ def result():
     
     eng_name = champion_name_map.get(champion, None)
     if eng_name:
-        img_url = f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{eng_name}_0.jpg"
-        st.image(img_url, use_container_width=True)  # ← 여기만 최신 방식으로 변경
+        eng_name_clean = eng_name.replace(" ", "")  # 공백 제거
+        img_url = f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{eng_name_clean}_0.jpg"
+        st.image(img_url, use_container_width=True)
     else:
         st.warning("이미지를 불러올 수 없습니다.")
     
     st.button("처음으로 돌아가기", on_click=lambda: st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None}))
 
+# 단계별 호출
 if st.session_state.step == 1:
     step1()
 elif st.session_state.step == 2:
