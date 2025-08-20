@@ -16,7 +16,7 @@ champion_db = {
     ("전략적으로 움직이는 운영형", "수비적", "초반 스노우볼형"): ("뽀삐", "강력한 CC와 초반 안정적인 맵 장악력 보유"),
     ("전략적으로 움직이는 운영형", "수비적", "후반 밸류형"): ("마오카이", "후반까지 안정적으로 성장하며 팀 승리에 기여"),
 
-    # 미드 (리더형)
+    # 미드
     ("팀을 이끄는 리더형", "공격적", "초반 스노우볼형"): ("라이즈", "글로벌 궁극기로 팀을 이끄는 전형적인 리더형 미드"),
     ("팀을 이끄는 리더형", "공격적", "후반 밸류형"): ("요네", "후반 캐리력이 뛰어난 공격형 미드"),
     ("팀을 이끄는 리더형", "수비적", "초반 스노우볼형"): ("갈리오", "팀을 보호하고 한타에 강력한 영향력을 주는 수비형 미드"),
@@ -35,7 +35,7 @@ champion_db = {
     ("팀원을 도와주는 서포터형", "수비적", "후반 밸류형"): ("쓰레쉬", "후반에도 팀 보호와 이니시로 유틸성이 뛰어난 서포터"),
 }
 
-# 챔피언 이미지 URL 매핑 (스플래시 이미지)
+# 한글 → 영문 URL 매핑 (스플래시 이미지)
 champion_img_map = {
     "레넥톤": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Renekton_0.jpg",
     "카밀": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
@@ -72,7 +72,6 @@ if "q3" not in st.session_state:
 def go_next_step():
     st.session_state.step += 1
 
-# 단계별 질문
 def step1():
     st.header("1/3 질문")
     st.write("선호하는 플레이 스타일을 선택하세요.")
@@ -103,17 +102,15 @@ def result():
     champion, desc = champion_db.get(key, ("정보 없음", "해당 조합에 맞는 챔피언 데이터가 없습니다."))
     st.subheader(f"추천 챔피언: {champion}")
     st.write(desc)
-
-    # 안전하게 이미지 출력
-    img_url = champion_img_map.get(champion)
+    
+    img_url = champion_img_map.get(champion, None)
     if img_url:
         st.image(img_url, use_container_width=True)
     else:
         st.warning("이미지를 불러올 수 없습니다.")
-
+    
     st.button("처음으로 돌아가기", on_click=lambda: st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None}))
 
-# 단계별 함수 호출
 if st.session_state.step == 1:
     step1()
 elif st.session_state.step == 2:
