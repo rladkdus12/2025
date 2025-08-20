@@ -16,7 +16,7 @@ champion_db = {
     ("전략적으로 움직이는 운영형", "수비적", "초반 스노우볼형"): ("뽀삐", "강력한 CC와 초반 안정적인 맵 장악력 보유"),
     ("전략적으로 움직이는 운영형", "수비적", "후반 밸류형"): ("마오카이", "후반까지 안정적으로 성장하며 팀 승리에 기여"),
 
-    # 미드
+    # 미드 (리더형)
     ("팀을 이끄는 리더형", "공격적", "초반 스노우볼형"): ("라이즈", "글로벌 궁극기로 팀을 이끄는 전형적인 리더형 미드"),
     ("팀을 이끄는 리더형", "공격적", "후반 밸류형"): ("요네", "후반 캐리력이 뛰어난 공격형 미드"),
     ("팀을 이끄는 리더형", "수비적", "초반 스노우볼형"): ("갈리오", "팀을 보호하고 한타에 강력한 영향력을 주는 수비형 미드"),
@@ -35,7 +35,7 @@ champion_db = {
     ("팀원을 도와주는 서포터형", "수비적", "후반 밸류형"): ("쓰레쉬", "후반에도 팀 보호와 이니시로 유틸성이 뛰어난 서포터"),
 }
 
-# 영어 이름 매핑
+# 한글 → 영문 챔피언 이름 매핑 (이미지 출력용)
 champion_name_map = {
     "레넥톤": "Renekton",
     "카밀": "Camille",
@@ -59,24 +59,28 @@ champion_name_map = {
     "쓰레쉬": "Thresh",
 }
 
-# 상태 관리
+# session_state 초기화
 if "step" not in st.session_state:
-    st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None})
+    st.session_state.step = 1
+if "q1" not in st.session_state:
+    st.session_state.q1 = None
+if "q2" not in st.session_state:
+    st.session_state.q2 = None
+if "q3" not in st.session_state:
+    st.session_state.q3 = None
 
 def go_next_step():
     st.session_state.step += 1
 
-def reset():
-    st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None})
-
-# 질문 단계
 def step1():
     st.header("1/3 질문")
+    st.write("선호하는 플레이 스타일을 선택하세요.")
     st.session_state.q1 = st.radio("1. 선호하는 플레이 스타일은?", ["공격적", "수비적"])
     st.button("다음", on_click=go_next_step)
 
 def step2():
     st.header("2/3 질문")
+    st.write("게임할 때 당신은?")
     st.session_state.q2 = st.radio("2. 게임할 때 당신은?", [
         "튼튼하게 앞라인을 담당하는 탑솔러형",
         "전략적으로 움직이는 운영형",
@@ -88,7 +92,11 @@ def step2():
 
 def step3():
     st.header("3/3 질문")
-    st.session_state.q3 = st.radio("3. 당신의 성향에 가까운 것은?", ["초반 스노우볼형", "후반 밸류형"])
+    st.write("당신의 성향에 가까운 것은?")
+    st.session_state.q3 = st.radio(
+        "3. 당신의 성향에 가까운 것은?", 
+        ["초반 스노우볼형", "후반 밸류형"]
+    )
     st.button("결과 보기", on_click=go_next_step)
 
 def result():
@@ -97,17 +105,16 @@ def result():
     champion, desc = champion_db.get(key, ("정보 없음", "해당 조합에 맞는 챔피언 데이터가 없습니다."))
     st.subheader(f"추천 챔피언: {champion}")
     st.write(desc)
-
-    eng_name = champion_name_map.get(champion)
+    
+    eng_name = champion_name_map.get(champion, None)
     if eng_name:
         img_url = f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{eng_name}_0.jpg"
-        st.image(img_url, caption=f"{champion} 기본 스킨", use_column_width=True)
+        st.image(img_url, use_container_width=True)  # ← 여기만 최신 방식으로 변경
     else:
         st.warning("이미지를 불러올 수 없습니다.")
+    
+    st.button("처음으로 돌아가기", on_click=lambda: st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None}))
 
-    st.button("처음으로 돌아가기", on_click=reset)
-
-# 실행
 if st.session_state.step == 1:
     step1()
 elif st.session_state.step == 2:
@@ -116,4 +123,3 @@ elif st.session_state.step == 3:
     step3()
 elif st.session_state.step == 4:
     result()
-
