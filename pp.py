@@ -35,28 +35,28 @@ champion_db = {
     ("팀원을 도와주는 서포터형", "수비적", "후반 밸류형"): ("쓰레쉬", "후반에도 팀 보호와 이니시로 유틸성이 뛰어난 서포터"),
 }
 
-# 한글 → 영문 챔피언 이름 매핑 (이미지 출력용)
-champion_name_map = {
-    "레넥톤": "Renekton",
-    "카밀": "Camille",
-    "제이스": "Jayce",
-    "케일": "Kayle",
-    "리 신": "LeeSin",
-    "비에고": "Viego",
-    "뽀삐": "Poppy",
-    "마오카이": "Maokai",
-    "라이즈": "Ryze",
-    "요네": "Yone",
-    "갈리오": "Galio",
-    "아지르": "Azir",
-    "드레이븐": "Draven",
-    "제리": "Zeri",
-    "진": "Jhin",
-    "아펠리오스": "Aphelios",
-    "블리츠크랭크": "Blitzcrank",
-    "알리스타": "Alistar",
-    "브라움": "Braum",
-    "쓰레쉬": "Thresh",
+# 챔피언 이미지 URL 매핑 (스플래시 이미지)
+champion_img_map = {
+    "레넥톤": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Renekton_0.jpg",
+    "카밀": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
+    "제이스": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jayce_0.jpg",
+    "케일": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayle_0.jpg",
+    "리 신": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
+    "비에고": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
+    "뽀삐": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Poppy_0.jpg",
+    "마오카이": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Maokai_0.jpg",
+    "라이즈": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ryze_0.jpg",
+    "요네": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yone_0.jpg",
+    "갈리오": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Galio_0.jpg",
+    "아지르": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Azir_0.jpg",
+    "드레이븐": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Draven_0.jpg",
+    "제리": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Zeri_0.jpg",
+    "진": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jhin_0.jpg",
+    "아펠리오스": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aphelios_0.jpg",
+    "블리츠크랭크": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Blitzcrank_0.jpg",
+    "알리스타": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Alistar_0.jpg",
+    "브라움": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Braum_0.jpg",
+    "쓰레쉬": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
 }
 
 # session_state 초기화
@@ -72,6 +72,7 @@ if "q3" not in st.session_state:
 def go_next_step():
     st.session_state.step += 1
 
+# 단계별 질문
 def step1():
     st.header("1/3 질문")
     st.write("선호하는 플레이 스타일을 선택하세요.")
@@ -93,10 +94,7 @@ def step2():
 def step3():
     st.header("3/3 질문")
     st.write("당신의 성향에 가까운 것은?")
-    st.session_state.q3 = st.radio(
-        "3. 당신의 성향에 가까운 것은?", 
-        ["초반 스노우볼형", "후반 밸류형"]
-    )
+    st.session_state.q3 = st.radio("3. 당신의 성향에 가까운 것은?", ["초반 스노우볼형", "후반 밸류형"])
     st.button("결과 보기", on_click=go_next_step)
 
 def result():
@@ -105,18 +103,17 @@ def result():
     champion, desc = champion_db.get(key, ("정보 없음", "해당 조합에 맞는 챔피언 데이터가 없습니다."))
     st.subheader(f"추천 챔피언: {champion}")
     st.write(desc)
-    
-    eng_name = champion_name_map.get(champion, None)
-    if eng_name:
-        eng_name_clean = eng_name.replace(" ", "")  # 공백 제거
-        img_url = f"https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{eng_name_clean}_0.jpg"
+
+    # 안전하게 이미지 출력
+    img_url = champion_img_map.get(champion)
+    if img_url:
         st.image(img_url, use_container_width=True)
     else:
         st.warning("이미지를 불러올 수 없습니다.")
-    
+
     st.button("처음으로 돌아가기", on_click=lambda: st.session_state.update({"step": 1, "q1": None, "q2": None, "q3": None}))
 
-# 단계별 호출
+# 단계별 함수 호출
 if st.session_state.step == 1:
     step1()
 elif st.session_state.step == 2:
